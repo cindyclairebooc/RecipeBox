@@ -42,7 +42,8 @@ export default function RecipeList({ recipes, favorites, setFavorites }) {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-100"
+            className="w-100 shadow-sm"
+            placeholder="Search recipe or ingredient..."
           />
         </div>
 
