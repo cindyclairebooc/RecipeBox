@@ -1,24 +1,19 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Field } from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import {Card,CardContent,} from "@/components/ui/card"
+import {Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,} from "@/components/ui/dialog"
 
 function App() {
   const [recipes, setRecipes] = useState([]);
   const [open, setOpen] = useState(false);  //For opening the modal to view full recipe details
   const [selectedRecipe, setSelectedRecipe] = useState(null); //For displaying a specific recipe when clicked
+  const [search, setSearch] = useState("");
 
+
+  // Loading recipes from recipes.json file on mount
   useEffect(() => {
     let url = "/data/recipes.json";
       fetch(url)
@@ -30,30 +25,53 @@ function App() {
     }, []);
 
   
+  // Filter recipe/ingredient based on search
+  const filteredRecipes = recipes.filter(recipe =>
+    recipe.title.toLowerCase().includes(search.toLowerCase()) ||
+    recipe.ingredients.some(i => i.toLowerCase().includes(search.toLowerCase())) 
+  )
+
+  
 
   return (
     <>
       <div>
+        {/* Search bar */}
+        <div className='mb-8 flex justify-center'>
+          <Input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-100"
+          />
+        </div>
+
+        {/* Display recipe list in cards */}
         <div className="grid grid-cols-3 gap-4">
-          {recipes.map((recipe, index) => (
-            <Card 
-              key={index} 
-              className="p-4" 
-              onClick={() => {
-                setSelectedRecipe(recipe)
-                setOpen(true);
-              }}
-            >
-              <CardContent>
-                <img
-                  src={recipe.image}
-                  className='w-full h-50 object-cover'
-                />
-                <h3>{recipe.title}</h3>
-                <p>{recipe.cookingTime} mins</p>
-              </CardContent>
-            </Card>
-            ))}  
+          {filteredRecipes.length > 0 ? (
+            filteredRecipes.map((recipe, index) => (
+              <Card 
+                key={index} 
+                className="p-4" 
+                onClick={() => {
+                  setSelectedRecipe(recipe)
+                  setOpen(true);
+                }}
+              >
+                <CardContent>
+                  <img
+                    src={recipe.image}
+                    className='w-full h-50 object-cover'
+                  />
+                  <h3>{recipe.title}</h3>
+                  <p>{recipe.cookingTime} mins</p>
+                </CardContent>
+              </Card>
+              ))  
+          ) : (
+            <p>No recipes found</p>
+          )}
+
         </div>
       </div>
 
